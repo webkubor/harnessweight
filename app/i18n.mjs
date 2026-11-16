@@ -136,6 +136,7 @@ const en = {
   "reason.server": "Server error",
   "reason.request": "Invalid request / endpoint",
   "reason.network": "Network connection",
+  "reason.dns": "DNS lookup failed",
   "reason.unknown": "Unclassified error",
   // ---- app shell ----
   "app.title": "HarnessWeight · agent harness token weight",
@@ -445,6 +446,7 @@ const zh = {
   "reason.server": "服务端错误",
   "reason.request": "请求参数 / 端点错误",
   "reason.network": "网络连接错误",
+  "reason.dns": "域名解析失败",
   "reason.unknown": "未分类错误",
   // ---- app shell ----
   "app.title": "HarnessWeight · agent harness 的 token 重量",
@@ -659,6 +661,7 @@ const insights = {
     volume: "{name} accounts for {share} of the input tokens in this period, the largest source of spend.",
     errors: "{name} has a failure rate of {rate}; failed requests may still consume tokens.",
     tools: "{hi} resends about {tokens} tokens of tool definitions per request ({count} tools), {ratio}x {lo} (about {loTokens} tokens, {loCount} tools).",
+    egress: "{names} failed {failures} times inside the same {window}-minute window. When unrelated providers fail together, the cause is usually this machine's network path — DNS, a VPN or a proxy routing those hosts abroad — not the models.",
   },
   zh: {
     prompt: "{hi} 每次请求平均读 {avg} token，是 {lo} 的 {ratio} 倍。",
@@ -666,6 +669,7 @@ const insights = {
     volume: "{name} 占了这段时间 {share} 的输入 token，是最大的开销来源。",
     errors: "{name} 的失败率是 {rate}；失败请求也可能消耗 token。",
     tools: "{hi} 每次请求重发的工具定义约 {tokens} token（{count} 个），是 {lo}（约 {loTokens} token，{loCount} 个）的 {ratio} 倍。",
+    egress: "{names} 在同一个 {window} 分钟内一共失败 {failures} 次。互不相关的供应商同时失败，通常是本机网络出口的问题——DNS、VPN 或代理把这些域名绕到了境外——而不是模型本身。",
   },
 }
 
@@ -681,4 +685,10 @@ export function insight(language, kind, parameters = {}) {
   const lang = languageFor(language)
   const template = insights[lang]?.[kind] ?? insights.en[kind] ?? kind
   return template.replace(/\{(\w+)\}/g, (match, name) => parameters[name] ?? match)
+}
+
+// A list inside a sentence uses that language's own separator, so the service
+// never has to spell punctuation itself.
+export function listJoin(language, items = []) {
+  return items.join(languageFor(language) === "zh" ? "、" : ", ")
 }

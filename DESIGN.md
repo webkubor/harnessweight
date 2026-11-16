@@ -72,3 +72,16 @@ read Codex metric is a completed user turn, while an optional Cursor hook measur
 a completed generation. Display source and valid sample count, group timing sorts
 by source, and do not apply best/worst colors. If more than one source contributes
 valid completions to the same agent, suppress the combined mean and explain why.
+
+Decision, 2026-11-16 (shared egress failures): one provider failing is that
+provider's business; several unrelated providers failing inside the same ten
+minutes is the machine's. Add `dns`, `network`, `stream` to the bounded reason
+taxonomy (still no upstream text), count a 5xx whose message describes a broken
+connection as `network` rather than `server`, and raise an `egress` insight only
+when one ten-minute window holds at least two distinct named providers and at
+least three path-type failures. Provider-side categories (auth, quota, rateLimit,
+request, model, server) can never trigger it, and a provider recorded as
+`unknown` cannot supply the second provider. The insight is always emitted first,
+because it is the one a reader can act on: it says the cause is probably DNS, a
+VPN or a proxy — typically domestic hosts routed abroad — not the models. Counts
+and window length only; no hostnames, no request text, no guessed region.
