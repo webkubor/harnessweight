@@ -22,6 +22,10 @@ test("network-path failures get their own categories instead of falling into unk
   // a gateway's 502 that is really a broken connection is transport, not app
   assert.equal(errorReason(502, "", 'Post "https://ark.example.com/v3/chat/completions": unexpected EOF'), "network")
   assert.equal(errorReason(502, "", "ECONNRESET: The socket connection was closed unexpectedly."), "network")
+  // the client's own proxy being down reports as a 502 from the local gateway
+  assert.equal(errorReason(502, "", 'Post "https://token-plan-cn.xiaomimimo.com/anthropic/v1/messages?beta=true": proxyconnect tcp: dial tcp 127.0.0.1:7890: connect: connection refused'), "network")
+  assert.equal(errorReason(502, "", 'Post "https://opencode.ai/inference/go/openai/v1/chat/completions": proxyconnect tcp: dial tcp 127.0.0.1:7890: connect: connection refused'), "network")
+  assert.equal(errorReason(503, "", "dial tcp 1.2.3.4:443: connect: no route to host"), "network")
   // and the categories that were already right stay right
   assert.equal(errorReason(0, "", ""), "unknown")
   assert.equal(errorReason(400, "invalid_request_error", ""), "request")
