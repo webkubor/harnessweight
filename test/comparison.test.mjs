@@ -1,6 +1,6 @@
 import { test } from "node:test"
 import assert from "node:assert/strict"
-import { DIRECTIONS, extrema, extremum, metricValue } from "../app/comparison.js"
+import { DIRECTIONS, extrema, extremum, metricValue, taskExtremaBySource } from "../app/comparison.js"
 
 test("favorable directions reverse for cache hit ratio versus failure rate, with tied extremes", () => {
   const rows = [
@@ -30,6 +30,14 @@ test("missing latency, tools, sessions and cache denominators cannot win; single
   assert.equal(extremum(10, { min: 10, max: 20 }).quality, "min")
 })
 
+
+test("task duration extremes compare only measurements from the same source", () => {
+  const row = (source, averageMs) => ({ taskDuration: { metricSource: source, available: true, samples: 1, averageMs } })
+  const ranges = taskExtremaBySource([row("task-events-v1", 10), row("task-events-v1", 20), row("codex-rollout", 100)])
+  assert.deepEqual(ranges.event, { min: 10, max: 20 })
+  assert.equal(ranges.codex, null)
+  assert.deepEqual(extremum(10, ranges.event), { edge: "min", quality: "min" })
+})
 
 test("task duration ranks valid completions even without requests and excludes empty or invalid samples", () => {
   const measured = (averageMs, samples = 1) => ({ calls: 0, taskDuration: { available: true, averageMs, samples } })

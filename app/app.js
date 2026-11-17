@@ -1,7 +1,7 @@
 // HarnessWeight — the interface. Served by the plugin's own service, so the
 // data is a same-origin fetch away.
 
-import { DIRECTIONS, metricValue, extrema, extremum } from "./comparison.js"
+import { DIRECTIONS, metricValue, extrema, extremum, taskExtremaBySource } from "./comparison.js"
 import { providerView } from "./providers.js"
 import { rankedModels } from "./model-marks.js"
 import { taskSource, taskEmptyKey, compareTaskSources } from "./telemetry.js"
@@ -297,11 +297,15 @@ function paintKpis(d) {
 function cardModels(a) {
   const models = rankedModels(a.models)
   if (!models.length) return ""
-  return `<div class="model-strip" role="group" aria-label="${esc(T("card.modelsRanked"))}">${models.map(m => {
-    const description = T("card.modelUsage", { model: m.name, count: int(m.count), share: pct(a.calls ? m.count / a.calls : 0) })
+  const description = m => T("card.modelUsage", { model: m.name, count: int(m.count), share: pct(a.calls ? m.count / a.calls : 0) })
+  const chips = models.slice(0, 2).map(m => {
+    const text = description(m)
     const glyph = m.icon ? mark({ name: m.name, icon: m.icon }, 28) : `<span class="model-alias" aria-hidden="true">${esc(m.name === "unknown" ? "?" : m.name.slice(0,2).toUpperCase())}</span>`
-    return `<button type="button" class="tip model-chip" aria-label="${esc(description)}" aria-expanded="false" data-model-name="${esc(m.name)}" data-model-count="${m.count}">${glyph}<span class="tip-body">${esc(description)}</span></button>`
-  }).join("")}</div>`
+    return `<button type="button" class="tip model-chip${["openai", "glm", "kimi", "grok", "mimo", "inception"].includes(m.family) ? " model-monochrome" : ""}" aria-label="${esc(text)}" aria-expanded="false" data-model-name="${esc(m.name)}" data-model-count="${m.count}">${glyph}<span class="tip-body">${esc(text)}</span></button>`
+  }).join("")
+  const remaining = models.slice(2)
+  const more = remaining.length ? T("card.moreModels", { count: int(remaining.length), models: remaining.map(description).join("; ") }) : ""
+  return `<div class="model-strip" role="group" aria-label="${esc(T("card.modelsRanked"))}">${chips}${more ? `<button type="button" class="tip model-chip model-more" aria-label="${esc(more)}" aria-expanded="false">+${remaining.length}<span class="tip-body">${esc(more)}</span></button>` : ""}</div>`
 }
 const modelStripResize = new ResizeObserver(entries => entries.forEach(({ target }) => updateModelFade(target)))
 function updateModelFade(strip) {
@@ -396,7 +400,9 @@ function paintCardSort() {
 
 function metricCell(a, key, formatted, ranges) {
   const value = metricValue(a, key)
-  const edge = key === "taskDuration" ? null : extremum(value, ranges[key], DIRECTIONS[key])
+  const edge = key === "taskDuration"
+    ? extremum(value, ranges.taskBySource[taskSource(a)], "neutral")
+    : extremum(value, ranges[key], DIRECTIONS[key])
   const note = key === "taskDuration" ? `<span class="extreme-label">${esc(value === null ? taskEmpty(a) : `${taskSourceText(a)} · ${taskSamples(a)}`)}</span>` : ""
   return `<td class="n ${edge ? `metric-${edge.quality}` : ""}" data-metric="${key}"${key === "taskDuration" && value === null ? ` title="${esc(taskEmpty(a))}"` : ""}>${value === null ? "—" : formatted}${note}${edge ? `<span class="extreme-label" title="${esc(T(`extreme.${edge.edge}`))}">${esc(T(`extreme.${edge.quality}`))}</span>` : ""}</td>`
 }
@@ -440,6 +446,7 @@ function sortTable() {
 }
 function paintTable(d) {
   const ranges = extrema(d.agents)
+  ranges.taskBySource = taskExtremaBySource(d.agents)
   const groups = TABLE_GROUPS.map(([group, keys]) => `<th scope="colgroup" colspan="${keys.length}">${esc(T(`table.group.${group}`))}</th>`).join("")
   const head = tableCols.map(([k, nameKey, n, tipKey]) => `<th scope="col" class="${n ? "n" : ""}" data-key="${k}"><div class="column-heading"><button type="button" data-table-sort="${k}">${esc(T(nameKey))}<span class="sort-icon" aria-hidden="true">↕</span></button>${tipKey ? tip(tipKey) : ""}</div></th>`).join("")
   const body = d.agents.map(a => `<tr data-agent="${esc(a.agent)}"><th scope="row" class="agent"><button type="button" class="agent-open who" data-open-agent="${esc(a.agent)}">${mark(a, 18)}${label(a)}</button></th>${tableCols.slice(1).map(([key]) => key === "protocol" ? `<td class="proto-cell" title="${esc(a.protocols?.map(p => p.name).join(", "))}">${esc(a.protocols?.[0]?.name || "—")}</td>` : metricCell(a, key, formatMetric(metricValue(a, key), key), ranges)).join("")}</tr>`).join("")

@@ -44,6 +44,22 @@ test("summarize groups by agent, hides clients, computes cache rate", () => {
   assert.equal(summarize({ usage, period: "7d", now, showClients: true }).agents.length, 3)
 })
 
+test("known Type4Me aliases merge across usage and tools while other clients remain recoverable", () => {
+  const now = Date.now()
+  const row = agent => ({ t: now - 1000, agent, model: "m", protocol: "chat", in: 10, out: 1, cacheRead: 0, cacheWrite: 0, credits: 0, ms: 1, ttft: 1 })
+  const usage = [row("Type4Me"), row("type4me"), row("Memory"), row("other"), row("Example"), row("example")]
+  const tools = [{ t: now - 1000, agent: "Type4Me", tools: 1, toolBytes: 20, toolNames: [] }]
+  const result = summarize({ usage, tools, now })
+  assert.equal(result.hiddenClients, 2)
+  assert.equal(result.agents.find(a => a.agent === "type4me").calls, 2)
+  assert.equal(result.agents.find(a => a.agent === "type4me").tools.samples, 1)
+  assert.ok(result.agents.some(a => a.agent === "Example"))
+  assert.ok(result.agents.some(a => a.agent === "example"))
+  const all = summarize({ usage, tools, now, showClients: true })
+  assert.equal(all.agents.find(a => a.agent === "Memory").kind, "client")
+  assert.equal(all.agents.find(a => a.agent === "other").calls, 1)
+})
+
 test("usage reader is incremental and skips a half-written last line", async () => {
   const dir = await mkdtemp(join(tmpdir(), "al-"))
   const f = join(dir, "usage.jsonl")

@@ -39,6 +39,7 @@ const en = {
   "sort.ascending": "ascending",
   "sort.descending": "descending",
   "card.modelsRanked": "Most used models, ordered by request count",
+  "card.moreModels": "{count} more models: {models}",
   "card.modelUsage": "{model} · {count} requests · {share} of this harness",
   "card.details": "View details",
 
@@ -122,7 +123,7 @@ const en = {
   "providers.noFailures": "No failures recorded in this sample.",
   "providers.noStatus": "No HTTP status",
   "providers.reasonShare": "Counts and percentages use failed requests in the selected scope. Categories are inferred from status and error text; raw messages are omitted.",
-  "providers.withClients": "Includes scripts and internal requests",
+  "providers.withClients": "Includes scripts and other clients",
   "providers.agentsOnly": "Agent harnesses only",
   "providers.formula": "Failure rate = failures / all requests. HTTP 499 cancellations are counted separately and remain in the denominator. Green = lowest rate; red = highest.",
   "providers.drilldown": "Select a harness name to inspect its errors.",
@@ -147,7 +148,7 @@ const en = {
   "period.today": "Last 24 hours",
   "period.7d": "7 days",
   "period.30d": "30 days",
-  "clients.toggle": "Include scripts and internal requests",
+  "clients.toggle": "Include scripts and other clients",
   "aria.insights": "Insights",
   "aria.overview": "Overview",
   "aria.cardSort": "Sort cards",
@@ -199,17 +200,17 @@ const en = {
   "kpi.requests": "{count} requests",
   "kpi.fullPriceOf": "{value} at full price",
   "kpi.avgPerCall": "{value} average per call",
-  "kpi.hiddenClients": "{count} script/internal requests not counted",
+  "kpi.hiddenClients": "{count} script/other client requests not counted",
   "kpi.clients": "Clients behind the gateway",
   "kpi.creditsNote": "Usage credits recorded by magpie",
 
   // ---- cards ----
-  "card.topSpender": "Top spender",
+  "card.topSpender": "Most input tokens",
   "card.inputTokens": "input tokens",
   "card.stackLegend": "Light: cache reads; dark: billed at full price",
   "card.detailsAria": "{name} details",
   "card.sessionMedianTitle": "Median session span",
-  "table.topSpenderTitle": "Top spender",
+  "table.topSpenderTitle": "Most input tokens",
 
   // ---- tools block ----
   "tools.empty": "No samples yet. The gateway hook records which tools each agent sends and how large they are (names and sizes only, never contents). Use an agent for a while, then refresh.",
@@ -349,6 +350,7 @@ const zh = {
   "sort.ascending": "升序",
   "sort.descending": "降序",
   "card.modelsRanked": "常用模型，按请求次数从多到少排列",
+  "card.moreModels": "另有 {count} 个模型：{models}",
   "card.modelUsage": "{model} · {count} 次请求 · 占该 Harness 的 {share}",
   "card.details": "查看详情",
 
@@ -432,7 +434,7 @@ const zh = {
   "providers.noFailures": "此样本中未记录失败请求。",
   "providers.noStatus": "无 HTTP 状态",
   "providers.reasonShare": "次数与占比以当前范围的失败请求为分母。分类依据状态码和错误文本推断，原始错误消息不展示。",
-  "providers.withClients": "含脚本和内部请求",
+  "providers.withClients": "含脚本及其他客户端",
   "providers.agentsOnly": "仅 Agent Harness",
   "providers.formula": "失败率 = 失败次数 / 总请求数。HTTP 499 主动取消单列，并保留在总请求分母中。绿色为最低，红色为最高。",
   "providers.drilldown": "点击 Harness 名称查看对应错误原因。",
@@ -457,7 +459,7 @@ const zh = {
   "period.today": "近 24 小时",
   "period.7d": "7 天",
   "period.30d": "30 天",
-  "clients.toggle": "含脚本和内部请求",
+  "clients.toggle": "含脚本及其他客户端",
   "aria.insights": "结论",
   "aria.overview": "总览",
   "aria.cardSort": "卡片排序",
@@ -509,17 +511,17 @@ const zh = {
   "kpi.requests": "{count} 次请求",
   "kpi.fullPriceOf": "按原价算的 {value}",
   "kpi.avgPerCall": "平均 {value}/次",
-  "kpi.hiddenClients": "另有 {count} 次脚本/内部请求未计",
+  "kpi.hiddenClients": "另有 {count} 次脚本/其他客户端请求未计",
   "kpi.clients": "网关后面的客户端",
   "kpi.creditsNote": "magpie 记账的按量额度",
 
   // ---- cards ----
-  "card.topSpender": "花得最多",
+  "card.topSpender": "输入 token 最多",
   "card.inputTokens": "输入 token",
   "card.stackLegend": "浅色：缓存读取；深色：按原价",
   "card.detailsAria": "{name} 详情",
   "card.sessionMedianTitle": "单次会话时长中位数",
-  "table.topSpenderTitle": "花得最多",
+  "table.topSpenderTitle": "输入 token 最多",
 
   // ---- tools block ----
   "tools.empty": "还没有采样。网关 hook 会从下一次请求开始记录每个 Agent 带了哪些工具、有多大（只记名字和大小，不记内容）。用一会儿 Agent 后刷新即可。",
@@ -658,7 +660,7 @@ const insights = {
   en: {
     prompt: "{hi} reads an average of {avg} tokens per request, {ratio}x {lo}.",
     cache: "{hi} has the highest cache hit rate ({hiRate}); {lo} the lowest ({loRate}). Actual pricing depends on the provider and model.",
-    volume: "{name} accounts for {share} of the input tokens in this period, the largest source of spend.",
+    volume: "{name} accounts for {share} of the input tokens in this period, the largest share.",
     errors: "{name} has a failure rate of {rate}; failed requests may still consume tokens.",
     tools: "{hi} resends about {tokens} tokens of tool definitions per request ({count} tools), {ratio}x {lo} (about {loTokens} tokens, {loCount} tools).",
     egress: "{names} failed {failures} times inside the same {window}-minute window. When unrelated providers fail together, the cause is usually this machine's network path — DNS, a VPN or a proxy routing those hosts abroad — not the models.",
@@ -666,7 +668,7 @@ const insights = {
   zh: {
     prompt: "{hi} 每次请求平均读 {avg} token，是 {lo} 的 {ratio} 倍。",
     cache: "缓存命中最高的是 {hi}（{hiRate}），最低的是 {lo}（{loRate}）。实际计费取决于供应商和模型。",
-    volume: "{name} 占了这段时间 {share} 的输入 token，是最大的开销来源。",
+    volume: "{name} 占了这段时间 {share} 的输入 token，是占比最高的。",
     errors: "{name} 的失败率是 {rate}；失败请求也可能消耗 token。",
     tools: "{hi} 每次请求重发的工具定义约 {tokens} token（{count} 个），是 {lo}（约 {loTokens} token，{loCount} 个）的 {ratio} 倍。",
     egress: "{names} 在同一个 {window} 分钟内一共失败 {failures} 次。互不相关的供应商同时失败，通常是本机网络出口的问题——DNS、VPN 或代理把这些域名绕到了境外——而不是模型本身。",

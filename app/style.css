@@ -1,5 +1,5 @@
 /* HarnessWeight — brand v2: teal #17A9A2, orange #F26B1D, warm yellow #FFB547, graphite #2B2F36.
-   Orange marks "the most expensive one" only; it is never decoration. */
+   Orange marks "the most input tokens" only; it is never decoration. */
 :root {
   --bg: #F6F7F8; --panel: #FFFFFF; --panel-2: #F1F3F5; --fg: #1B1E23; --muted: #646B76; --line: #E4E7EB;
   --teal: #17A9A2; --teal-2: #5EE0D2; --teal-ink: #0D7772; --teal-soft: #E3F6F4;
@@ -168,6 +168,12 @@ td.agent { font-weight: 600; }
 .mark { display: inline-flex; flex: none; align-items: center; justify-content: center; border-radius: 6px; overflow: hidden; vertical-align: middle; }
 .mark img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .mark.letter { color: #fff; font-weight: 700; line-height: 1; }
+:root[data-theme="dark"] .mark:not(.letter) { background: #f1f3f5; }
+:root[data-theme="dark"] .model-chip .mark { background: transparent; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .mark:not(.letter) { background: #f1f3f5; }
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .model-chip .mark { background: transparent; }
+}
 .who { display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
 .card-name { display: inline-flex; align-items: center; gap: 9px; }
 .who .dot { margin: 0 0 0 2px; }
@@ -271,7 +277,7 @@ td.agent { font-weight: 600; }
 /* the live badge sits on one line with the name */
 .card-head { flex-wrap: wrap; row-gap: 4px; }
 .card-name { min-width: 0; flex: 1 1 auto; }
-/* the badge and the "most expensive" tag go to the next line on narrow cards */
+/* the badge and the "most input tokens" tag go to the next line on narrow cards */
 .card-head .live-badge, .card-head .tag { order: 2; }
 /* the table header must breathe: many columns now carry a tip marker */
 th .tip { margin-left: 3px; }
@@ -541,7 +547,7 @@ summary:focus-visible, .comparison-scroll:focus-visible { outline: 2px solid var
 /* The model strip occupies the space beside each card's primary value. */
 .card-value-row { display: flex; align-items: center; gap: 12px; min-width: 0; }
 .card-value-row .card-big { flex: 0 1 auto; min-width: 0; }
-.model-strip { --model-fade-start: 0px; --model-fade-end: 0px; display: flex; flex: 0 1 154px; min-width: 64px; align-items: center; gap: 5px; padding: 6px 2px; margin-top: 10px; margin-left: auto; overflow-x: auto; overscroll-behavior-inline: contain; scrollbar-width: none; scroll-padding-inline: 28px; -webkit-mask-image: linear-gradient(to right, transparent, black var(--model-fade-start), black calc(100% - var(--model-fade-end)), transparent); mask-image: linear-gradient(to right, transparent, black var(--model-fade-start), black calc(100% - var(--model-fade-end)), transparent); }
+.model-strip { display: flex; flex: 0 0 auto; flex-wrap: wrap; justify-content: flex-end; max-width: 128px; align-items: center; gap: 5px; padding: 6px 2px; margin-top: 10px; margin-left: auto; }
 .model-strip::-webkit-scrollbar { display: none; }
 .model-strip:focus-within { -webkit-mask-image: none; mask-image: none; }
 .model-chip.tip { display: inline-grid; place-items: center; flex: none; width: 36px; height: 36px; margin: 0; padding: 3px; border: 1px solid var(--line); border-radius: 9px; color: var(--fg); background: var(--panel-2); cursor: help; opacity: 1; font: inherit; }
@@ -550,6 +556,10 @@ summary:focus-visible, .comparison-scroll:focus-visible { outline: 2px solid var
 .model-chip.tip:active { transform: scale(.94); }
 .model-chip.tip::before { content: none; }
 .model-chip .mark { pointer-events: none; }
+:root[data-theme="dark"] .model-monochrome img { filter: invert(1); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .model-monochrome img { filter: invert(1); }
+}
 .model-alias { display: grid; place-items: center; width: 28px; height: 28px; color: var(--muted); font-size: 12px; font-weight: 650; }
 
 /* Independent observations: freshness is not proof that every source is configured. */

@@ -1,3 +1,5 @@
+import { taskSource } from "./telemetry.js"
+
 // Direction applies within the displayed sample, not to task quality.
 export const DIRECTIONS = {
   calls: "neutral", prompt: "low", avgPrompt: "low", cacheRate: "high",
@@ -21,6 +23,9 @@ export function extrema(rows, keys = Object.keys(DIRECTIONS), valueOf = metricVa
     const values = rows.map(row => valueOf(row, key)).filter(Number.isFinite)
     return [key, values.length > 1 ? { min: Math.min(...values), max: Math.max(...values) } : null]
   }))
+}
+export function taskExtremaBySource(rows) {
+  return Object.fromEntries([...new Set(rows.map(taskSource))].map(source => [source, extrema(rows.filter(row => taskSource(row) === source), ["taskDuration"]).taskDuration]))
 }
 export function extremum(value, range, direction = "neutral") {
   if (!Number.isFinite(value) || !range || range.min === range.max) return null
