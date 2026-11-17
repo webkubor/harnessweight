@@ -32,11 +32,11 @@ test("missing latency, tools, sessions and cache denominators cannot win; single
 
 
 test("task duration extremes compare only measurements from the same source", () => {
-  const row = (source, averageMs) => ({ taskDuration: { metricSource: source, available: true, samples: 1, averageMs } })
+  const row = (source, averageMs) => ({ taskDuration: { metricSource: source, available: true, samples: 2, averageMs } })
   const ranges = taskExtremaBySource([row("task-events-v1", 10), row("task-events-v1", 20), row("codex-rollout", 100)])
-  assert.deepEqual(ranges.event, { min: 10, max: 20 })
-  assert.equal(ranges.codex, null)
-  assert.deepEqual(extremum(10, ranges.event), { edge: "min", quality: "min" })
+  assert.deepEqual(ranges["task-events-v1"], { min: 10, max: 20 })
+  assert.equal(ranges["codex-rollout"], null)
+  assert.deepEqual(extremum(10, ranges["task-events-v1"]), { edge: "min", quality: "min" })
 })
 
 test("task duration ranks valid completions even without requests and excludes empty or invalid samples", () => {

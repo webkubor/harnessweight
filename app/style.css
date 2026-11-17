@@ -168,10 +168,12 @@ td.agent { font-weight: 600; }
 .mark { display: inline-flex; flex: none; align-items: center; justify-content: center; border-radius: 6px; overflow: hidden; vertical-align: middle; }
 .mark img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .mark.letter { color: #fff; font-weight: 700; line-height: 1; }
-:root[data-theme="dark"] .mark:not(.letter) { background: #f1f3f5; }
+:root[data-theme="dark"] { --mark-bg: #f1f3f5; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]):not([data-theme="dark"]) { --mark-bg: #f1f3f5; } }
+:root[data-theme="dark"] .mark:not(.letter) { background: var(--mark-bg, transparent); }
 :root[data-theme="dark"] .model-chip .mark { background: transparent; }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]):not([data-theme="dark"]) .mark:not(.letter) { background: #f1f3f5; }
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .mark:not(.letter) { background: var(--mark-bg, transparent); }
   :root:not([data-theme="light"]):not([data-theme="dark"]) .model-chip .mark { background: transparent; }
 }
 .who { display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
@@ -548,8 +550,6 @@ summary:focus-visible, .comparison-scroll:focus-visible { outline: 2px solid var
 .card-value-row { display: flex; align-items: center; gap: 12px; min-width: 0; }
 .card-value-row .card-big { flex: 0 1 auto; min-width: 0; }
 .model-strip { display: flex; flex: 0 0 auto; flex-wrap: wrap; justify-content: flex-end; max-width: 128px; align-items: center; gap: 5px; padding: 6px 2px; margin-top: 10px; margin-left: auto; }
-.model-strip::-webkit-scrollbar { display: none; }
-.model-strip:focus-within { -webkit-mask-image: none; mask-image: none; }
 .model-chip.tip { display: inline-grid; place-items: center; flex: none; width: 36px; height: 36px; margin: 0; padding: 3px; border: 1px solid var(--line); border-radius: 9px; color: var(--fg); background: var(--panel-2); cursor: help; opacity: 1; font: inherit; }
 .model-chip.tip:hover { border-color: var(--teal-ink); background: var(--teal-soft); }
 .model-chip.tip:focus-visible { outline: 2px solid var(--teal); outline-offset: 1px; }

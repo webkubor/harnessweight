@@ -305,27 +305,17 @@ function cardModels(a) {
   }).join("")
   const remaining = models.slice(2)
   const more = remaining.length ? T("card.moreModels", { count: int(remaining.length), models: remaining.map(description).join("; ") }) : ""
-  return `<div class="model-strip" role="group" aria-label="${esc(T("card.modelsRanked"))}">${chips}${more ? `<button type="button" class="tip model-chip model-more" aria-label="${esc(more)}" aria-expanded="false">+${remaining.length}<span class="tip-body">${esc(more)}</span></button>` : ""}</div>`
-}
-const modelStripResize = new ResizeObserver(entries => entries.forEach(({ target }) => updateModelFade(target)))
-function updateModelFade(strip) {
-  strip.style.setProperty("--model-fade-start", strip.scrollLeft > 1 ? "20px" : "0px")
-  strip.style.setProperty("--model-fade-end", strip.scrollWidth - strip.clientWidth - strip.scrollLeft > 1 ? "28px" : "0px")
+  return `<div class="model-strip" role="group" aria-label="${esc(T("card.modelsRanked"))}">${chips}${more ? `<button type="button" class="tip model-chip model-more" data-model-name="__more__" aria-label="+${remaining.length} ${esc(more)}" aria-expanded="false">+${remaining.length}<span class="tip-body">${esc(more)}</span></button>` : ""}</div>`
 }
 function wireModelStrips() {
-  modelStripResize.disconnect()
   for (const strip of $("cards").querySelectorAll(".model-strip")) {
-    strip.addEventListener("scroll", () => updateModelFade(strip), { passive: true })
     strip.addEventListener("keydown", e => {
       if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) return
       const chips = [...strip.querySelectorAll("button")], index = chips.indexOf(document.activeElement)
       const next = e.key === "Home" ? 0 : e.key === "End" ? chips.length - 1 : Math.max(0, Math.min(chips.length - 1, index + (e.key === "ArrowRight" ? 1 : -1)))
       e.preventDefault()
-      chips[next]?.scrollIntoView({ block: "nearest", inline: "nearest" })
       chips[next]?.focus({ preventScroll: true })
     })
-    modelStripResize.observe(strip)
-    updateModelFade(strip)
   }
 }
 
@@ -401,7 +391,7 @@ function paintCardSort() {
 function metricCell(a, key, formatted, ranges) {
   const value = metricValue(a, key)
   const edge = key === "taskDuration"
-    ? extremum(value, ranges.taskBySource[taskSource(a)], "neutral")
+    ? extremum(value, ranges.taskBySource[a.taskDuration?.metricSource], "neutral")
     : extremum(value, ranges[key], DIRECTIONS[key])
   const note = key === "taskDuration" ? `<span class="extreme-label">${esc(value === null ? taskEmpty(a) : `${taskSourceText(a)} · ${taskSamples(a)}`)}</span>` : ""
   return `<td class="n ${edge ? `metric-${edge.quality}` : ""}" data-metric="${key}"${key === "taskDuration" && value === null ? ` title="${esc(taskEmpty(a))}"` : ""}>${value === null ? "—" : formatted}${note}${edge ? `<span class="extreme-label" title="${esc(T(`extreme.${edge.edge}`))}">${esc(T(`extreme.${edge.quality}`))}</span>` : ""}</td>`
